@@ -28,11 +28,11 @@ Todo o projeto funciona diretamente no navegador, utilizando **HTML, CSS e JavaS
 
 ### ☀️ Modo claro
 
-<img src="images/modo-claro.png" alt="Markdown Studio em modo claro" width="100%">
+<img src="images/modo-claro.PNG" alt="Markdown Studio em modo claro" width="100%">
 
 ### 🌙 Modo escuro
 
-<img src="images/modo-escuro.png" alt="Markdown Studio em modo escuro" width="100%">
+<img src="images/modo-escuro.PNG" alt="Markdown Studio em modo escuro" width="100%">
 
 ---
 
