@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Editor Markdown moderno com pré-visualização em tempo real, salvamento automático, importação e exportação de arquivos.">
+  <meta name="theme-color" content="#2563eb">
+  <title>Markdown Studio — Editor Markdown Online</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#editor">Pular para o editor</a>
+
+  <header class="app-header">
+    <div class="brand" aria-label="Markdown Studio">
+      <span class="brand-icon" aria-hidden="true">M↓</span>
+      <div>
+        <h1>Markdown Studio</h1>
+        <p>Escreva, visualize e exporte Markdown.</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <span id="saveStatus" class="save-status" role="status" aria-live="polite">Pronto</span>
+      <button id="themeToggle" class="icon-button" type="button" aria-label="Ativar modo escuro" title="Alternar tema">
+        <span class="theme-icon" aria-hidden="true">☾</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="action-bar" aria-label="Ações do documento">
+      <div class="document-name-group">
+        <label for="documentName">Nome do arquivo</label>
+        <div class="filename-input">
+          <input id="documentName" type="text" value="meu-documento" maxlength="80" spellcheck="false" autocomplete="off">
+          <span>.md</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <input id="fileInput" type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden>
+        <button id="importButton" class="button button-secondary" type="button">
+          <span aria-hidden="true">↑</span> Importar
+        </button>
+        <button id="exportButton" class="button button-primary" type="button">
+          <span aria-hidden="true">↓</span> Exportar
+        </button>
+        <button id="copyButton" class="button button-secondary" type="button">
+          <span aria-hidden="true">⧉</span> Copiar
+        </button>
+        <button id="clearButton" class="button button-danger-ghost" type="button">
+          <span aria-hidden="true">×</span> Limpar
+        </button>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Barra de ferramentas Markdown">
+      <div class="toolbar-group" aria-label="Formatação de texto">
+        <button class="tool-button" type="button" data-action="bold" title="Negrito (Ctrl+B)" aria-label="Negrito"><strong>B</strong></button>
+        <button class="tool-button" type="button" data-action="italic" title="Itálico (Ctrl+I)" aria-label="Itálico"><em>I</em></button>
+        <button class="tool-button" type="button" data-action="strike" title="Tachado" aria-label="Tachado"><s>S</s></button>
+      </div>
+
+      <div class="toolbar-divider" aria-hidden="true"></div>
+
+      <div class="toolbar-group" aria-label="Estrutura">
+        <button class="tool-button text-tool" type="button" data-action="h1" title="Título 1" aria-label="Título 1">H1</button>
+        <button class="tool-button text-tool" type="button" data-action="h2" title="Título 2" aria-label="Título 2">H2</button>
+        <button class="tool-button text-tool" type="button" data-action="h3" title="Título 3" aria-label="Título 3">H3</button>
+        <button class="tool-button" type="button" data-action="quote" title="Citação" aria-label="Citação">❞</button>
+        <button class="tool-button" type="button" data-action="divider" title="Linha horizontal" aria-label="Linha horizontal">―</button>
+      </div>
+
+      <div class="toolbar-divider" aria-hidden="true"></div>
+
+      <div class="toolbar-group" aria-label="Listas">
+        <button class="tool-button" type="button" data-action="unorderedList" title="Lista com marcadores" aria-label="Lista com marcadores">•≡</button>
+        <button class="tool-button" type="button" data-action="orderedList" title="Lista numerada" aria-label="Lista numerada">1≡</button>
+        <button class="tool-button" type="button" data-action="taskList" title="Lista de tarefas" aria-label="Lista de tarefas">☑</button>
+      </div>
+
+      <div class="toolbar-divider" aria-hidden="true"></div>
+
+      <div class="toolbar-group" aria-label="Inserções">
+        <button class="tool-button" type="button" data-action="link" title="Link (Ctrl+K)" aria-label="Inserir link">↗</button>
+        <button class="tool-button" type="button" data-action="image" title="Imagem" aria-label="Inserir imagem">▧</button>
+        <button class="tool-button" type="button" data-action="inlineCode" title="Código em linha" aria-label="Código em linha">&lt;/&gt;</button>
+        <button class="tool-button text-tool" type="button" data-action="codeBlock" title="Bloco de código" aria-label="Bloco de código">{ }</button>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Área de edição">
+      <article class="panel editor-panel">
+        <header class="panel-header">
+          <div>
+            <h2>Editor</h2>
+            <p>Markdown</p>
+          </div>
+          <div class="stats" aria-label="Estatísticas do texto">
+            <span><strong id="wordCount">0</strong> palavras</span>
+            <span><strong id="characterCount">0</strong> caracteres</span>
+            <span><strong id="lineCount">1</strong> linha</span>
+          </div>
+        </header>
+        <label class="sr-only" for="editor">Conteúdo Markdown</label>
+        <textarea id="editor" spellcheck="true" autocomplete="off" aria-describedby="editorHint"></textarea>
+        <p id="editorHint" class="sr-only">Use Markdown ou a barra de ferramentas para formatar o documento.</p>
+      </article>
+
+      <article class="panel preview-panel">
+        <header class="panel-header">
+          <div>
+            <h2>Pré-visualização</h2>
+            <p>Resultado renderizado</p>
+          </div>
+          <span class="live-badge"><span aria-hidden="true"></span> Tempo real</span>
+        </header>
+        <div id="preview" class="markdown-body" tabindex="0" aria-label="Pré-visualização do Markdown"></div>
+      </article>
+    </section>
+
+    <footer class="app-footer">
+      <div class="footer-brand">
+        <strong>Markdown Studio</strong>
+        <span>Escreva, visualize e exporte Markdown.</span>
+      </div>
+
+      <div class="footer-developer">
+        <span>Desenvolvido por Marcelo Gomes dev</span>
+        <nav class="footer-links" aria-label="Links de Marcelo Gomes dev">
+          <a href="https://github.com/marcelogomesdev" target="_blank" rel="noopener noreferrer" aria-label="GitHub de Marcelo Gomes dev">GitHub</a>
+          <span aria-hidden="true">•</span>
+          <a href="https://www.linkedin.com/in/marcelogomesdev/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de Marcelo Gomes dev">LinkedIn</a>
+        </nav>
+      </div>
+    </footer>
+  </main>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog id="confirmDialog" class="confirm-dialog">
+    <form method="dialog">
+      <div class="dialog-icon" aria-hidden="true">!</div>
+      <h2>Limpar documento?</h2>
+      <p>Todo o conteúdo atual será removido. Essa ação não poderá ser desfeita.</p>
+      <div class="dialog-actions">
+        <button class="button button-secondary" value="cancel">Cancelar</button>
+        <button class="button button-danger" value="confirm">Limpar documento</button>
+      </div>
+    </form>
+  </dialog>
+
+  <noscript>
+    <div class="noscript-message">Ative o JavaScript para usar o Markdown Studio.</div>
+  </noscript>
+</body>
+</html>

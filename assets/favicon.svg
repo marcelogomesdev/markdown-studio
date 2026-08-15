@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Markdown Studio">
+  <defs>
+    <linearGradient id="g" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#g)"/>
+  <path d="M13 20h11l8 10 8-10h11v24h-9V32l-10 12-10-12v12h-9V20Z" fill="#fff"/>
+  <path d="m48 36 5 5 5-5v7l-5 5-5-5v-7Z" fill="#bfdbfe"/>
+</svg>
